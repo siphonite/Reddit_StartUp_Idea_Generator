@@ -2,7 +2,9 @@ use crate::errors::AppError;
 use crate::models::RedditPost;
 
 const USER_AGENT: &str =
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) RedditResearchCLI/1.0";
+    "reddit-research-engine:v0.1.0 (by /u/reddit-research-bot)";
+
+const REDDIT_BASE: &str = "https://old.reddit.com";
 
 /// Fetches a Reddit post including top-level comments.
 pub async fn fetch_reddit_post(
@@ -10,7 +12,8 @@ pub async fn fetch_reddit_post(
     url: &str,
     max_comments: usize,
 ) -> Result<RedditPost, AppError> {
-    let fetch_url = format!("{}.json", url);
+    // Use old.reddit.com to avoid TLS-fingerprint-based blocking
+    let fetch_url = format!("{}.json", url.replace("www.reddit.com", "old.reddit.com"));
 
     let response = client
         .get(&fetch_url)
@@ -59,8 +62,8 @@ pub async fn fetch_subreddit_posts(
     limit: usize,
 ) -> Result<Vec<String>, AppError> {
     let url = format!(
-        "https://www.reddit.com/r/{}/hot.json?limit={}",
-        subreddit, limit
+        "{}/r/{}/hot.json?limit={}",
+        REDDIT_BASE, subreddit, limit
     );
 
     let response = client
@@ -91,7 +94,7 @@ pub async fn fetch_subreddit_posts(
         .iter()
         .filter_map(|child| {
             let permalink = child["data"]["permalink"].as_str()?;
-            Some(format!("https://www.reddit.com{}", permalink.trim_end_matches('/')))
+            Some(format!("{}{}", REDDIT_BASE, permalink.trim_end_matches('/')))
         })
         .collect();
 

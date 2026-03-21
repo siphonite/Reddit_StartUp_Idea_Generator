@@ -32,6 +32,7 @@ A Rust CLI engine that crawls Reddit posts and subreddits, extracts discussions 
 ### Prerequisites
 
 - **Rust** (stable) — [install via rustup](https://rustup.rs/)
+- **OpenSSL Dev Libraries** (Linux only) — `sudo apt install libssl-dev pkg-config`
 - **Gemini API key** — [get one from Google AI Studio](https://aistudio.google.com/apikey)
 - **Google Cloud project** *(optional)* — required only for Sheets export
 
